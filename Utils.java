@@ -58,8 +58,8 @@ public class Utils {
     public void headerBox(){
         boxFormating("_", 145);
         formatMsg("| Codigo del Producto", 22, false);
-        formatMsg(" Nombre del Producto",23, false);
-        formatMsg(" Cantidad en Existencia",23, false);
+        formatMsg(" Nombre del Producto",34, false);
+        formatMsg(" Existencia",12, false);
         formatMsg(" Precio Unitario", 18, false);
         formatMsg(" Total", 30, false);
         formatMsg(" Ultima modificacion", 24, true);
@@ -68,8 +68,8 @@ public class Utils {
 
     public void bodyBox(String codigo_producto, String nombre_producto, Integer unidades, Float precio, Float total, String date){
         formatMsg("| " + codigo_producto, 22, false);
-        formatMsg(" "+nombre_producto,23, false);
-        formatMsg(" "+ unidades,23, false);
+        formatMsg(" "+nombre_producto,34, false);
+        formatMsg(" "+ unidades,12, false);
         formatMsg(" " + precio, 18, false);
         formatMsg(" "+ total, 30, false);
         formatMsg(" "+ date, 24, true);
@@ -78,8 +78,8 @@ public class Utils {
     public void footerBox(int unidadades_totales, Float cantidad_total){
         boxFormating("_", 145);
         formatMsg("| ", 22, false);
-        formatMsg(" ",23, false);
-        formatMsg(" "+ unidadades_totales,23, false);
+        formatMsg(" ",34, false);
+        formatMsg(" "+ unidadades_totales,12, false);
         formatMsg(" " , 18, false);
         formatMsg(" "+ cantidad_total+ " Gran Total", 30, false);
         formatMsg(" ", 24, true);
@@ -89,8 +89,7 @@ public class Utils {
     public String dateTimeInfo(){
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedDate = myDateObj.format(myFormatObj);
-        return formattedDate.replace(" ", "-");
+        return myDateObj.format(myFormatObj);
     }
 
     public ProductType getFieldsProducts(String product){

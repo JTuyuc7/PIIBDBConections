@@ -1,11 +1,6 @@
 package ProyectoConcesionaria;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Objects;
+import java.sql.*;
 import java.util.Properties;
 
 /*
@@ -15,10 +10,10 @@ public class DbConection {
     public Connection getConnection() {
         Connection dbConnection = null;
         try {
-            String url = "jdbc:mysql://localhost:3357/db_drivexport";
+            String url = "yourURL";
             Properties info = new Properties();
-            info.put("user", "root");
-            info.put("password", "mypass123");
+            info.put("user", "youruser");
+            info.put("password", "yourPawssword");
             dbConnection = DriverManager.getConnection(url, info);
 
         }catch (SQLException e){
@@ -38,4 +33,34 @@ public class DbConection {
         return data;
     }
 
+    public int insertRecord(String query, String codigo_producto, String nombre_producto, int cantidad_p, float precio_unitario) throws SQLException {
+        Connection con = getConnection();
+        PreparedStatement preparedStatement = con.prepareStatement(query);
+        preparedStatement.setString(1, codigo_producto);
+        preparedStatement.setString(2, nombre_producto);
+        preparedStatement.setInt(3, cantidad_p);
+        preparedStatement.setFloat(4, precio_unitario);
+// !       preparedStatement.setString(5, date); // Investigar sobre como manejar fechas
+        return preparedStatement.executeUpdate();
+    }
+
+    public ResultSet singleProduct(String query, String code) throws SQLException {
+        Connection con = getConnection();
+        PreparedStatement preparedStatement = con.prepareStatement(query);
+        preparedStatement.setString(1, code);
+        return preparedStatement.executeQuery();
+    }
+
+    public int updateRecord(String query,  String id_to_update, int amount_to_update) throws SQLException {
+        Connection con = getConnection();
+        PreparedStatement preparedStatement = con.prepareStatement(query);
+        preparedStatement.setInt(1, amount_to_update);
+        preparedStatement.setString(2, id_to_update);
+        return preparedStatement.executeUpdate();
+    }
+
+    public void closeConnection() throws SQLException {
+        Connection con = getConnection();
+        con.close();
+    }
 }
