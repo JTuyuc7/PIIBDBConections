@@ -1,10 +1,7 @@
 package ProyectoConcesionaria;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Scanner;
 /*
     * Metodos para poder agregar un nuevo registro al inventario
@@ -12,38 +9,40 @@ import java.util.Scanner;
 public class RegistroInventario {
     Scanner sc = new Scanner(System.in);
     int cantidad_producto = 0;
-    String codigo_producto, nombre_producto, precio_unitario, datos_nuevo_registro, regex = "\\d+";
+    String codigo_producto, nombre_producto, precio_unitario, regex = "\\d+";
 
-    public void nuevoRegistro(String fileName) {
+    public void nuevoRegistro() throws SQLException {
 
         //? Utilidades
         Utils utils = new Utils();
-        List<String> products;
-        List<String> code_products = new ArrayList<>();
-        String temp_product_code = "";
+        //? DB
+        DbConection db = new DbConection();
 
-        //? Productos
-        products = utils.openData(fileName);
+        ResultSet product = null;
+        String codigo_existente = "";
+        String query = "SELECT * FROM producto WHERE `codigoproducto` = ?";
 
         System.out.println("INGRESA LOS DATOS PARA UN NUEVO REGISTRO \n");
-        for( String product_code : products){
-            temp_product_code = utils.getFieldsProducts(product_code).codigoProducto;
-            code_products.add(temp_product_code);
-        }
+
         do {
             //? Codigo de producto
             System.out.print("Ingresa el codigo del producto: ");
             codigo_producto = sc.nextLine();
+            product = db.singleProduct(query, codigo_producto);
+            if(product != null){
+                while (product.next()){
+                    codigo_existente = product.getString(1);
+                }
+            }
 
-            if(code_products.contains(codigo_producto)){
+            if(codigo_producto.equals(codigo_existente)){
                 System.out.println("Codigo existente, por favor ingrese uno nuevo");
             }
 
-            if(codigo_producto.length() == 0 ){
+            if(codigo_producto.isEmpty()){
                 System.out.println("El codigo no puede estar vacio");
             }
-
-        }while (codigo_producto.length() == 0 || code_products.contains(codigo_producto));
+        }while (codigo_producto.isEmpty() || codigo_producto.equals(codigo_existente));
 
         String code_with_no_spaces = "";
         if( codigo_producto.contains(" ")){
@@ -62,9 +61,6 @@ public class RegistroInventario {
             }
         }while ( nombre_producto.length() <= 3);
 
-        // List<String> nombreProductosList = Arrays.asList(nombre_producto.split("\\s+"));
-        String transformed = nombre_producto.replace(" ", "-");
-
         //? Precio Producto
         do {
             System.out.print("Ingresa el precio del producto: ");
@@ -78,20 +74,18 @@ public class RegistroInventario {
             }
 
         }while (precio_unitario.isEmpty() || !precio_unitario.matches(regex) || Integer.parseInt(precio_unitario) == 0);
-
         String date = utils.dateTimeInfo();
-        //TODO: para actualizar o eliminar ver si es necesario separar los registros por comas o por algun otro elemento
-        datos_nuevo_registro = code_with_no_spaces + " " + transformed + " " + cantidad_producto + " " + precio_unitario + " " + date + "\n";
-        try {
-            FileWriter registro = new FileWriter(fileName, true);
-            registro.write(datos_nuevo_registro);
-            registro.close();
+        String queryAddProduct = "INSERT INTO `producto` (`codigoproducto`, `nombreproducto`, `cantidadproducto`, `preciounitario`) VALUES (?, ?, ?, ?)";
+
+        int inserted =  db.insertRecord(queryAddProduct, code_with_no_spaces, nombre_producto, cantidad_producto, Float.parseFloat(precio_unitario) );
+        if(inserted == 1){
             utils.boxFormating("-", 65);
             utils.formatMsg("| Producto guardado cxitosamente", 65, true);
             utils.boxFormating("-", 65);
-        }catch (IOException e){
-            System.out.println("No se pudo crear el registro :(");
-            e.printStackTrace();
+        }else {
+            utils.boxFormating("-", 65);
+            utils.formatMsg("| Oops, Algo sali mal :(", 65, true);
+            utils.boxFormating("-", 65);
         }
     }
 }
