@@ -10,10 +10,10 @@ public class DbConection {
     public Connection getConnection() {
         Connection dbConnection = null;
         try {
-            String url = "yourURL";
+            String url = "dburl";
             Properties info = new Properties();
-            info.put("user", "youruser");
-            info.put("password", "yourPawssword");
+            info.put("user", "user");
+            info.put("password", "password");
             dbConnection = DriverManager.getConnection(url, info);
 
         }catch (SQLException e){
