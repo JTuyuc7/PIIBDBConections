@@ -29,7 +29,7 @@ public class Main {
         ResultSet inventario = null;
 
         try {
-            inventario = db.readFromDb("SELECT * FROM " + "producto");
+            inventario = db.readFromDb("SELECT codigoproducto, nombreproducto, cantidadproducto, preciounitario, CONVERT_TZ(fecha,'+00:00','-06:00') fecha FROM `producto`");
         } catch (SQLException e) {
             System.out.println("Oops, no pudimos obtener los productos");
         }
@@ -38,6 +38,8 @@ public class Main {
         do {
             //? Mostrar opciones menu
             opcion = menu.opcionesMenu();
+
+            // TODO: mover el archivo jar de java a otra locacion
 
             switch (opcion) {
                 case 1: {

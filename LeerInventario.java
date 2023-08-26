@@ -21,7 +21,7 @@ public class LeerInventario {
         ResultSet inventario = null;
 
         try {
-            inventario = db.readFromDb("SELECT * FROM " + "producto");
+            inventario = db.readFromDb("SELECT codigoproducto, nombreproducto, cantidadproducto, preciounitario, CONVERT_TZ(fecha,'+00:00','-06:00') fecha FROM `producto`");
         } catch (SQLException e) {
             System.out.println("Oops, no pudimos obtener los productos");
         }
